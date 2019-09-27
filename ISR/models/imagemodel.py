@@ -8,9 +8,9 @@ from ISR.utils.image_processing import (
 
 
 class ImageModel:
-    """ISR models parent class.
+    """ISR segmodels parent class.
 
-    Contains functions that are common across the super-scaling models.
+    Contains functions that are common across the super-scaling segmodels.
     """
 
     def predict(self, input_image_array, by_patch_of_size=None, batch_size=10, padding_size=2):

@@ -168,7 +168,7 @@ class TrainerHelper:
                 )
 
     def _save_weights(self, epoch, generator, discriminator=None, metric=None, best=False):
-        """ Saves the weights of the non-None models. """
+        """ Saves the weights of the non-None segmodels. """
 
         if best:
             gen_path = self.weights_name['generator'].with_name(

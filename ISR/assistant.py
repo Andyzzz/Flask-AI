@@ -6,7 +6,7 @@ from ISR.utils.logger import get_logger
 
 
 def _get_module(generator):
-    return import_module('ISR.models.' + generator)
+    return import_module('ISR.segmodels.' + generator)
 
 
 def run(config_file, default=False, training=False, prediction=False):

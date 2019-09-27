@@ -5,17 +5,16 @@ from __future__ import print_function
 import os
 from functools import partial
 import tensorflow as tf
-# import tensorflow as tf
 import att_classification.models as att_models
 import models
 import cv2
 import data
 import numpy as np
 import pylib
-import tflib as tl
+# import tflib as tl
 import matplotlib.image as mp
 import FaceDetector.FaceDetectorPro as dalao
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 useful_attrs = {
@@ -122,7 +121,7 @@ class STGAN(object):
                 input = tf.placeholder(shape=(None, 128, 128, 3), dtype=tf.float32)
                 logits = att_models.classifier(input, reuse=False, training=False)
                 saver = tf.train.Saver()
-                saver.restore(self.sess_cls, '/data/code/STGAN_latest/STGAN/att_classification/checkpoints/128.ckpt')
+                saver.restore(self.sess_cls, './att_classification/checkpoints/128.ckpt')
 
         return input, logits
 
@@ -168,7 +167,7 @@ class STGAN(object):
                 else:
                     x_sample = Gdec(Genc(xa_sample, is_training=False), test_label, is_training=False)
                 saver = tf.train.Saver()
-                saver.restore(self.sess_GAN, '/data/code/STGAN_latest/STGAN/output/128/checkpoints/Epoch_(100)_(947of947).ckpt')
+                saver.restore(self.sess_GAN, 'G:/Deecamp/STGAN_ZW/STGAN/output/128/checkpoints/Epoch_(100)_(947of947).ckpt')
 
         return xa_sample, _b_sample, raw_b_sample, x_sample
 

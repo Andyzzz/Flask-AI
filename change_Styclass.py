@@ -8,7 +8,7 @@ import tensorflow as tf
 import os
 import glob
 import argparse
-from transform_folder.models.parser import face_parser
+from segmodels.parser import face_parser
 #import face_recognition   ###########################
 from PIL import Image
 import cv2 as cv
@@ -31,9 +31,9 @@ class changestyle(object):
         with self.sess_b.as_default():
             with self.sess_b.graph.as_default():
 #                 saver = tf.train.import_meta_graph(os.path.join('./model', 'model.meta'))
-                saver = tf.train.import_meta_graph(os.path.join('/data/code/STGAN_latest/STGAN/transform_folder/model', 'model.meta'))
+                saver = tf.train.import_meta_graph(os.path.join('G:/Deecamp/STGAN_ZW/STGAN/transform_folder/model', 'model.meta'))
                 saver.restore(self.sess_b,
-                              tf.train.latest_checkpoint('/data/code/STGAN_latest/STGAN/transform_folder/model'))
+                              tf.train.latest_checkpoint('G:/Deecamp/STGAN_ZW/STGAN/transform_folder/model'))
                 X = self.sess_b.graph.get_tensor_by_name('X:0')
                 Y = self.sess_b.graph.get_tensor_by_name('Y:0')
                 Xs = self.sess_b.graph.get_tensor_by_name('generator/xs:0')
@@ -55,21 +55,21 @@ class changestyle(object):
         # 定义你的目标风格图像地址
 
         if type == 0:
-            makeup_photo = "/data/code/STGAN_latest/STGAN/transform_folder/imgs/makeup/gete.png"
+            makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/gete.png"
         elif type == 1:
-            makeup_photo = "/data/code/STGAN_latest/STGAN/transform_folder/imgs/makeup/vFG112.png"
+            makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/vFG112.png"
         elif type == 2:
-            makeup_photo = "/data/code/STGAN_latest/STGAN/transform_folder/imgs/makeup/vFG137.png"
+            makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/vFG137.png"
         elif type == 3:
-            makeup_photo = "/data/code/STGAN_latest/STGAN/transform_folder/imgs/makeup/vFG756.png"
+            makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/vFG756.png"
         elif type == 4:
-            makeup_photo = "/data/code/STGAN_latest/STGAN/transform_folder/imgs/makeup/vRX916.png"
+            makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/vRX916.png"
         elif type == 5:
-            makeup_photo = "/data/code/STGAN_latest/STGAN/transform_folder/imgs/makeup/XMY-014.png"
+            makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/XMY-014.png"
         elif type == 6:
-            makeup_photo = "/data/code/STGAN_latest/STGAN/transform_folder/imgs/makeup/XMY-074.png"
+            makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/XMY-074.png"
         else:
-            makeup_photo = "/data/code/STGAN_latest/STGAN/transform_folder/imgs/makeup/XMY-136.png"
+            makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/XMY-136.png"
 
         """人脸截取"""
         # 此处将输入的图片通过face_recognition
@@ -82,7 +82,7 @@ class changestyle(object):
 
         # image = Image.fromarray(im)
         image = im[:, :, ::-1]
-        detector = cv.CascadeClassifier("/data/code/STGAN_latest/STGAN/transform_folder/haarcascade_frontalface_alt.xml")
+        detector = cv.CascadeClassifier("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/haarcascade_frontalface_alt.xml")
         rects = detector.detectMultiScale(image, scaleFactor=1.1, minNeighbors=2, minSize=(10, 10),
                                           flags=cv.CASCADE_SCALE_IMAGE)  # (x,y,w,h)
         x, y, w, h = rects[0]

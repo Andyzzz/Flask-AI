@@ -7,7 +7,7 @@ import tensorflow as tf
 
 def average_gradients(tower_grads):
     """Calculate the average gradient for each shared variable across all towers.
-    Copied from https://github.com/tensorflow/models/blob/master/tutorials/image/cifar10/cifar10_multi_gpu_train.py.
+    Copied from https://github.com/tensorflow/segmodels/blob/master/tutorials/image/cifar10/cifar10_multi_gpu_train.py.
     Note that this function provides a synchronization point across all towers.
     Args:
       tower_grads: List of lists of (gradient, variable) tuples. The outer list

@@ -32,7 +32,7 @@ def mean_accuracy_multi_binary_label_with_logits(att, logits):
 
 """ graphs """
 #with tf.device('/gpu:%d' % gpu_id):
-''' models '''
+''' segmodels '''
 classifier = models.classifier
 
 ''' graph '''

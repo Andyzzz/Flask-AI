@@ -53,7 +53,7 @@ test_data_pool = tl.TfrecordData(test_tfrecord_path, 1, shuffle=False)
 
 """ graphs """
 # with tf.device('/gpu:%d' % gpu_id):
-''' models '''
+''' segmodels '''
 classifier = models.classifier
 
 ''' graph '''

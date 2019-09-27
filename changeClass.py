@@ -8,7 +8,7 @@ import numpy as np
 #from matplotlib import pyplot as plt
 # import sys
 # sys.path.append('./face_toolbox_keras/')
-from Flask.models.parser import face_parser
+from segmodels.parser import face_parser
 from PIL import Image
 
 
@@ -27,10 +27,10 @@ class changeFace():
         seg = out[0]
         return seg
 
-    def resize_image(self, max_size=768):
+    def resize_image(self,im, max_size=768):
         if np.max(im.shape) > max_size:
             ratio = max_size / np.max(im.shape)
-            print(f"Resize image to ({str(int(im.shape[1] * ratio))}, {str(int(im.shape[0] * ratio))}).")
+            # print(f"Resize image to ({str(int(im.shape[1] * ratio))}, {str(int(im.shape[0] * ratio))}).")
             return cv2.resize(im, (0, 0), fx=ratio, fy=ratio)
         return im
 

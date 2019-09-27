@@ -1,4 +1,6 @@
-from flask import Flask,request,json
+
+# -*- coding:utf8 -*-
+from flask import Flask, request, json
 # import sql
 import base64
 import numpy as np
@@ -7,33 +9,32 @@ import demo2
 from FaceDetector.FaceDetectorPro import faceDetect_server
 from ISR.models import RDN, RRDN
 from PIL import Image
-from transform_folder.change_Styclass import changestyle
-import matplotlib.pyplot as plt
-# import transform.flask_run as trans
+from change_Styclass import changestyle
+# import matplotlib.pyplot as plt
+#
+# from Flask.CARN_pytorch.carn.cap import CARN_SR
+# from Flask.segmodels.parser import face_parser
+# import data_helper as dt
+from changeClass import changeFace
 
-from Flask.CARN_pytorch.carn.cap import CARN_SR
-from Flask.models.parser import face_parser
-import data_helper as dt
-from Flask.changeClass import changeFace
 app = Flask(__name__)
-#全局化
+# 全局化
 # carn = CARN_SR()
 cgclr = changeFace()
 stgan = demo2.STGAN()
 rdn = RDN(arch_params={'C': 6, 'D': 20, 'G': 64, 'G0': 64, 'x': 2})
-rdn.model.load_weights('../ImageSuperResolution/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf')
+rdn.model.load_weights(
+    'G:/Deecamp/STGAN_ZW/STGAN/ImageSuperResolution/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf')
 
-img = Image.open('../ImageSuperResolution/image/20121.jpg')
+img = Image.open('G:/Deecamp/STGAN_ZW/STGAN/ImageSuperResolution/image/20121.jpg')
 
 lr_img = np.array(img)
 rdn.predict(lr_img)
-cgclr.getMask(lr_img,'skin')
+cgclr.getMask(lr_img, 'skin')
 
-cgstyle=changestyle()
-im=cv2.imread("../transform_folder/fj2.png")
-body=cgstyle.inference(im, 1)
-
-
+cgstyle = changestyle()
+im = cv2.imread("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/fj2.png")
+body = cgstyle.inference(im, 1)
 
 
 @app.route('/')
@@ -41,34 +42,33 @@ def hello_world():
     return "Hello"
 
 
-
-@app.route('/changeColor',methods=['POST','GET'])
-#可能需要用两个函数来处理图片
+@app.route('/changeColor', methods=['POST', 'GET'])
+# 可能需要用两个函数来处理图片
 def changeColor():
     if request.method == 'POST':
-        dic=request.get_json()
-        pic=dic['file']
-        RED=int(dic['RED'])
+        dic = request.get_json()
+        pic = dic['file']
+        RED = int(dic['RED'])
         GREEN = int(dic['GREEN'])
         BLUE = int(dic['BLUE'])
-        mix=int(dic['mix'])
+        mix = int(dic['mix'])
 
-        #print(pic)
-        #sql存储照片
-        #sql.store(pic)
+        # print(pic)
+        # sql存储照片
+        # sql.store(pic)
 
-        #图片以base64编码，在此解压
+        # 图片以base64编码，在此解压
         pic = base64.b64decode(pic)
         pic = np.frombuffer(pic, np.uint8)
-        pic = cv2.imdecode(pic, cv2.IMREAD_COLOR)[...,::-1]
+        pic = cv2.imdecode(pic, cv2.IMREAD_COLOR)[..., ::-1]
 
-        #pic现在是numpy array，调用接口进行处理
+        # pic现在是numpy array，调用接口进行处理
         type = dic['type']
         tgtRGB = [RED, GREEN, BLUE]
-        pic,mask = cgclr.Change(pic, type, tgtRGB, mix/10.0)
+        pic, mask = cgclr.Change(pic, type, tgtRGB, mix / 10.0)
 
-        pic = pic[...,::-1]
-        #pic转base64编码
+        pic = pic[..., ::-1]
+        # pic转base64编码
         retval, buffer = cv2.imencode('.jpg', pic)
         pic = base64.b64encode(buffer)
         pic = pic.decode()
@@ -76,8 +76,7 @@ def changeColor():
         return json.dumps(dic)
 
 
-
-@app.route('/changeAttr',methods=['POST','GET'])
+@app.route('/changeAttr', methods=['POST', 'GET'])
 def changeAttr():
     if request.method == 'POST':
         dic = request.get_json()
@@ -91,7 +90,7 @@ def changeAttr():
         # 图片以base64编码，在此解压
         pic = base64.b64decode(pic)
         pic = np.frombuffer(pic, np.uint8)
-        pic = cv2.imdecode(pic, cv2.IMREAD_COLOR)[...,::-1]
+        pic = cv2.imdecode(pic, cv2.IMREAD_COLOR)[..., ::-1]
 
         pic = cv2.resize(pic, (128, 128))
         # print("PIC", pic.shape, type(pic), type(pic[0][0][0]))
@@ -99,8 +98,7 @@ def changeAttr():
         # mask = cgclr.getMask(lr_img,'skin')
         # mask = mask/255
         # mask = np.reshape(mask,(256,256,1))
-        pic_1 = cv2.resize(pic, (128, 128))                   # resize为128*128
-
+        pic_1 = cv2.resize(pic, (128, 128))  # resize为128*128
 
         # pic现在是numpy array，调用接口进行处理
         labels = stgan.classifier(pic_1)
@@ -111,7 +109,7 @@ def changeAttr():
         # pic_1 = carn.inference(pic_GEN)
         # mask_ori = (mask + 1) % 2
         # pic = pic * mask_ori + pic_1 *mask
-        pic = pic_1[...,::-1]
+        pic = pic_1[..., ::-1]
         # pic转base64编码
         retval, buffer = cv2.imencode('.jpg', pic)
         pic = base64.b64encode(buffer)
@@ -119,12 +117,13 @@ def changeAttr():
         dic = {'res_data': pic}
         return json.dumps(dic)
 
-@app.route("/changeStyle",methods = ['POST','GET'])
+
+@app.route("/changeStyle", methods=['POST', 'GET'])
 def changeStyle():
     if request.method == 'POST':
         dic = request.get_json()
         pic = dic['file']
-        type=int(dic['type'])
+        type = int(dic['type'])
         # print(pic)
         # sql存储照片
         # sql.store(pic)
@@ -136,7 +135,7 @@ def changeStyle():
         print("sss")
         # pic现在是numpy array，调用接口进行处理
 
-        pic = cgstyle.inference(pic,type)     ############################
+        pic = cgstyle.inference(pic, type)  ############################
 
         print("ccc")
         # pic转base64编码
@@ -147,7 +146,7 @@ def changeStyle():
         return json.dumps(dic)
 
 
-@app.route('/changeSize',methods=['POST','GET'])
+@app.route('/changeSize', methods=['POST', 'GET'])
 def changeSize():
     if request.method == 'POST':
         dic = request.get_json()
@@ -165,8 +164,7 @@ def changeSize():
         # pic现在是numpy array，调用接口进行处理
 
         pic = faceDetect_server(pic, imgSize=(512, 512))
-        pic = rdn.predict(pic)                            # 超分为512*512
-
+        pic = rdn.predict(pic)  # 超分为512*512
 
         # pic转base64编码
         retval, buffer = cv2.imencode('.jpg', pic)
@@ -176,9 +174,8 @@ def changeSize():
         return json.dumps(dic)
 
 
-
 if __name__ == '__main__':
-    app.run(host='192.168.43.116', port=5050)
+    app.run(host='114.212.173.176', port=5050)
 
     # tgtRGB = [255,0,0]
     # changePart = 'mouth'
