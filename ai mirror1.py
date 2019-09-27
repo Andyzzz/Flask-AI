@@ -1,5 +1,4 @@
 from flask import Flask, request, json
-# import sql
 import base64
 import numpy as np
 import cv2
@@ -7,35 +6,36 @@ from ISR.models import RDN, RRDN
 from PIL import Image
 import matplotlib.pyplot as plt
 import data_helper as dt
+# import sql
 
-import sys
-
-sys.path.append("G:/Deecamp/STGAN_ZW/STGAN/")
 # sys.path.append("/data/code/STGAN_latest/STGAN/")
 import demo2
 from FaceDetector.FaceDetectorPro import faceDetect_server
 from change_Styclass import changestyle
-from segmodels.parser import face_parser
+# from segmodels.parser import face_parser
 from changeClass import changeFace
-import face_swap.faceswapOnline as fs
+import faceswapOnline as fs
+import sys
 
+sys.path.append("G:/Deecamp/STGAN_ZW/STGAN/")
 app = Flask(__name__)
 
-with open('../makeup/0.png', 'rb') as f:
+## 小程序里所有的妆容变换的示例图标
+with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/0.png', 'rb') as f:
     a1 = base64.b64encode(f.read()).decode()
-with open('../makeup/1.png', 'rb') as f:
+with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/1.png', 'rb') as f:
     a2 = base64.b64encode(f.read()).decode()
-with open('../makeup/2.png', 'rb') as f:
+with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/2.png', 'rb') as f:
     a3 = base64.b64encode(f.read()).decode()
-with open('../makeup/3.png', 'rb') as f:
+with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/3.png', 'rb') as f:
     a4 = base64.b64encode(f.read()).decode()
-with open('../makeup/4.png', 'rb') as f:
+with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/4.png', 'rb') as f:
     a5 = base64.b64encode(f.read()).decode()
-with open('../makeup/5.png', 'rb') as f:
+with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/5.png', 'rb') as f:
     a6 = base64.b64encode(f.read()).decode()
-with open('../makeup/6.png', 'rb') as f:
+with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/6.png', 'rb') as f:
     a7 = base64.b64encode(f.read()).decode()
-with open('../makeup/7.png', 'rb') as f:
+with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/7.png', 'rb') as f:
     a8 = base64.b64encode(f.read()).decode()
 
 with open('history.jpg', 'rb') as f:
@@ -64,12 +64,12 @@ im = cv2.imread("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/fj2.png")
 body = cgstyle.inference(im, 1)
 
 
-@app.route('/infer-d13525c9-bf43-41df-9c94-35320a6bb3e8/')
+@app.route('/Hello')
 def hello_world():
     return "Hello"
 
 
-@app.route('/infer-d13525c9-bf43-41df-9c94-35320a6bb3e8/init', methods=['POST', 'GET'])
+@app.route('/init', methods=['POST', 'GET'])
 def init():
     # 把makeup的图片传过去
     # 把gif也传过去
@@ -89,7 +89,7 @@ def init():
 
 
 #######xu
-@app.route('/infer-d13525c9-bf43-41df-9c94-35320a6bb3e8/story_init', methods=['POST', 'GET'])
+@app.route('/story_init', methods=['POST', 'GET'])
 def story_init():
     # story的图片传过去
     if request.method == 'GET':
@@ -101,7 +101,7 @@ def story_init():
         return json.dumps(dic)
 
 
-@app.route('/infer-d13525c9-bf43-41df-9c94-35320a6bb3e8/story_init_1', methods=['POST', 'GET'])
+@app.route('/story_init_1', methods=['POST', 'GET'])
 def story_init_1():
     # story的图片传过去
     if request.method == 'POST':
@@ -109,7 +109,6 @@ def story_init_1():
         pic = dic['file']
         story = dic['type']
 
-        #         print(pic)
         # print(pic)
         # sql存储照片
         # sql.store(pic)
@@ -122,11 +121,11 @@ def story_init_1():
         # pic现在是numpy array，调用接口进行处理
         a = fs.Faceswap()
         if story == 'marvel':
-            path = "../face_swap/marWithTitle"
+            path = "G:/Deecamp/STGAN_ZW/STGAN/face_swap/marWithTitle"
         elif story == "history":
-            path = "../face_swap/history"
+            path = "G:/Deecamp/STGAN_ZW/STGAN/face_swap/history"
         elif story == "SpringFestival":
-            path = "../face_swap/SpringFestival"
+            path = "G:/Deecamp/STGAN_ZW/STGAN/face_swap/SpringFestival"
         else:
             path = None
             print("error in ai mirror path")
@@ -146,7 +145,7 @@ def story_init_1():
         return json.dumps(dic)
 
 
-@app.route('/infer-d13525c9-bf43-41df-9c94-35320a6bb3e8/changeColor', methods=['POST', 'GET'])
+@app.route('/changeColor', methods=['POST', 'GET'])
 # 这里的methods的意思
 # 可能需要用两个函数来处理图片
 def changeColor():
@@ -158,7 +157,6 @@ def changeColor():
         BLUE = int(dic['BLUE'])
         mix = int(dic['mix'])
 
-        # print(pic)
         # sql存储照片
         # sql.store(pic)
 
@@ -182,9 +180,7 @@ def changeColor():
 
 
 # 想看传入json的图片格式，以及传入前端后怎么如何变成图片
-
-
-@app.route("/infer-d13525c9-bf43-41df-9c94-35320a6bb3e8/changeStyle", methods=['POST', 'GET'])
+@app.route("/changeStyle", methods=['POST', 'GET'])
 def changeStyle():
     if request.method == 'POST':
         dic = request.get_json()
@@ -212,16 +208,12 @@ def changeStyle():
         return json.dumps(dic)
 
 
-@app.route('/infer-d13525c9-bf43-41df-9c94-35320a6bb3e8/changeAttr', methods=['POST', 'GET'])
+@app.route('/changeAttr', methods=['POST', 'GET'])
 def changeAttr():
     if request.method == 'POST':
         dic = request.get_json()
         pic = dic['file']
         attr = [dic['attr']]
-
-        # print(pic)
-        # sql存储照片
-        # sql.store(pic)
 
         # 图片以base64编码，在此解压
         pic = base64.b64decode(pic)
@@ -256,36 +248,35 @@ def changeAttr():
         return json.dumps(dic)
 
 
-@app.route('/infer-d13525c9-bf43-41df-9c94-35320a6bb3e8/changeSize', methods=['POST', 'GET'])
+@app.route('/changeSize', methods=['POST', 'GET'])
 def changeSize():
     if request.method == 'POST':
         dic = request.get_json()
-        pic = dic['file']
-
-        # print(pic)
-        # sql存储照片
-        # sql.store(pic)
+        pic = dic['file']   # 从前端获得的图片
 
         # 图片以base64编码，在此解压
         pic = base64.b64decode(pic)
         pic = np.frombuffer(pic, np.uint8)
         pic = cv2.imdecode(pic, cv2.IMREAD_COLOR)
-
+        print('shape before changeSize: ', pic.shape)
         # pic现在是numpy array，调用接口进行处理
 
-        pic = faceDetect_server(pic, imgSize=(256, 256))  # 128， 128
-        pic = rdn.predict(pic)  # 超分为256*256
+        pic = faceDetect_server(pic, imgSize=(128, 128))  # 128， 128
+        print('shape after changeSize: ', pic.shape)
+        # pic = rdn.predict(pic)  # 超分为256*256
 
         # pic转base64编码
         retval, buffer = cv2.imencode('.jpg', pic)
         pic = base64.b64encode(buffer)
         pic = pic.decode()
+        print('type pic ', type(pic))
         dic = {'res_data': pic}
         return json.dumps(dic)
 
 
 if __name__ == '__main__':
-    app.run(host='114.212.173.176', port=8080)
+    app.run(host='127.0.0.1', port=8080)
+    # app.run(host='114.212.173.176', port=8080)
 
     # tgtRGB = [255,0,0]
     # changePart = 'mouth'

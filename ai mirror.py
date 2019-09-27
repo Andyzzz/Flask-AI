@@ -1,4 +1,3 @@
-
 # -*- coding:utf8 -*-
 from flask import Flask, request, json
 # import sql
@@ -11,7 +10,6 @@ from ISR.models import RDN, RRDN
 from PIL import Image
 from change_Styclass import changestyle
 # import matplotlib.pyplot as plt
-#
 # from Flask.CARN_pytorch.carn.cap import CARN_SR
 # from Flask.segmodels.parser import face_parser
 # import data_helper as dt
@@ -152,10 +150,6 @@ def changeSize():
         dic = request.get_json()
         pic = dic['file']
 
-        # print(pic)
-        # sql存储照片
-        # sql.store(pic)
-
         # 图片以base64编码，在此解压
         pic = base64.b64decode(pic)
         pic = np.frombuffer(pic, np.uint8)
@@ -175,7 +169,7 @@ def changeSize():
 
 
 if __name__ == '__main__':
-    app.run(host='114.212.173.176', port=5050)
+    app.run(host='114.212.173.176', port=8080)
 
     # tgtRGB = [255,0,0]
     # changePart = 'mouth'

@@ -8,6 +8,8 @@
 
 import cv2
 import numpy as np
+
+
 def faceDetect(imgPath, savePath, imgSize=(256, 256)):
     '''
     Detect face from a specific image
@@ -21,9 +23,10 @@ def faceDetect(imgPath, savePath, imgSize=(256, 256)):
         p = max(img.shape[0], img.shape[1]) / 1024
         img = cv2.resize(img, (int(img.shape[1] / p), int(img.shape[0] / p)))
     # set face detector
-    face_cascade = cv2.CascadeClassifier('/data/code/STGAN_latest/STGAN/FaceDetector/opencv_classifier_files/haarcascade_frontalface_alt2.xml')
+    face_cascade = cv2.CascadeClassifier(
+        'G:/Deecamp/STGAN_ZW/STGAN/FaceDetector/opencv_classifier_files/haarcascade_frontalface_alt2.xml')
     # face = face_cascade.detectMultiScale(img, 1.1, 10)scaleFactor=None, minNeighbors=None,
-    face = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=10,)
+    face = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=10)
 
     # set return path
     # savePath = "save/"
@@ -58,7 +61,7 @@ def faceDetect(imgPath, savePath, imgSize=(256, 256)):
         print("No face is detected!")
 
 
-def faceDetect_server(img, imgSize=(256, 256)):
+def faceDetect_server(img, imgSize):
     '''
     Detect face from a specific image
     :param imgPath:     The path of the image
@@ -71,9 +74,10 @@ def faceDetect_server(img, imgSize=(256, 256)):
         img = cv2.resize(img, (int(img.shape[1] / p), int(img.shape[0] / p)))
     # set face detector
 
-    face_cascade = cv2.CascadeClassifier('/data/code/STGAN_latest/STGAN/FaceDetector/opencv_classifier_files/haarcascade_frontalface_alt2.xml')
+    face_cascade = cv2.CascadeClassifier(
+        'G:/Deecamp/STGAN_ZW/STGAN/FaceDetector/opencv_classifier_files/haarcascade_frontalface_alt2.xml')
     # face = face_cascade.detectMultiScale(img, 1.1, 10)
-    face = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=10, )
+    face = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=10)
     # set return path
     # savePath = "save/"
     if len(face):
@@ -82,7 +86,7 @@ def faceDetect_server(img, imgSize=(256, 256)):
             x_center = int(x + 0.5 * w)
             y_center = int(y + 0.35 * h)
             # the max width of the face area
-            zoom_rate = 1.7
+            zoom_rate = 1.7  # 1.7
             face_width = int(w / 2 * zoom_rate)
             face_height = int(w * imgSize[1] / imgSize[0] / 2 * zoom_rate)
             # find x_min, x_max, y_min, y_max
@@ -100,20 +104,21 @@ def faceDetect_server(img, imgSize=(256, 256)):
                 y_min = img.shape[0] - 2 * face_height
 
             f = cv2.resize(img[y_min:y_max, x_min:x_max], imgSize)
+            print('resized shape: ', f.shape)
             return f
     else:
         return None
+
 
 if __name__ == '__main__':
     # for i in range(1, 16):
     #     faceDetect("image\\{0}.jpg".format(i), "face"+str(i), imgSize=(178, 218))
     # print("Over!")
-#     im = cv2.imread("hq.jpg")
-#     print('ok')
-#     pic = faceDetect_server(im, imgSize=(128, 128))
-#     cv2.imshow('1',pic)
-#     cv2.waitKey()
-
+    #     im = cv2.imread("hq.jpg")
+    #     print('ok')
+    #     pic = faceDetect_server(im, imgSize=(128, 128))
+    #     cv2.imshow('1',pic)
+    #     cv2.waitKey()
 
     faceDetect("hq.jpg", "hq2.jpg", imgSize=(178, 218))
     # cv2.imwrite()

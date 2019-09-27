@@ -48,20 +48,20 @@ import dlib
 import numpy
 import os
 
-import sys
-
 
 class TooManyFaces(Exception):
     pass
 
+
 class NoFaces(Exception):
     pass
+
+
 class Faceswap(object):
     def __init__(self, ):
 
         # PREDICTOR_PATH = "/home/matt/dlib-18.16/shape_predictor_68_face_landmarks.dat"
-        PREDICTOR_PATH = "/data/code/STGAN_latest/STGAN/face_swap/shape_predictor_68_face_landmarks.dat"
-
+        PREDICTOR_PATH = "G:/Deecamp/STGAN_ZW/STGAN/face_swap/shape_predictor_68_face_landmarks.dat"
 
         self.SCALE_FACTOR = 1
         self.FEATHER_AMOUNT = 11
@@ -76,48 +76,48 @@ class Faceswap(object):
         self.AW_POINTS = list(range(0, 17))
 
         self.Marvel_Faces = {
-                "1marvel005.jpg":[646,45,930,347,],
-                "1marvel006.jpg": [511, 223, 953, 637],
-                "1marvel007.jpg":[793,19,1102,415,],
-                "1marvel008.jpg":[1176,59,1523,510,],
-                "1marvel012.jpg":[922,14,1243,401,],
-                "1marvel013.jpg":[896,6,1268,410,],
-                "1marvel018.jpg":[559,94,1000,513,],
-                "1marvel019.jpg":[558,49,1028,505,],
-                "1marvel020.jpg":[1020,20,1335,420,],
-                "1marvel022.jpg":[587,18,941,453,],
-                "1marvel023.jpg":[1028,23,1391,468,],
-                "2marvel11.jpg":[518,1,1180,683,],
-                "2marvel12.jpg":[418,36,813,465,],
-                "2marvel14.jpg":[1077,44,1357,387,],
-                "2marvel15.jpg":[1000,10,1675,715,],
-                "2marvel16.jpg":[557,28,959,541,],
-                "2marvel17.jpg":[504,205,740,479,],
-                "2marvel19.jpg":[858,209,1072,523,],
-                "2marvel2.jpg":[671,79,1003,497,],
-                "2marvel22.jpg":[578,3,1153,523,],
-                "2marvel23.jpg":[631,61,1095,565,],
-                "2marvel26.jpg":[1077,1,1498,563,],
-                "2marvel29.jpg":[1154,59,1328,274,],
-                "2marvel3.jpg":[618,33,970,476,],
-                "2marvel30.jpg":[539,24,907,450,],
-                "2marvel34.jpg":[1090,17,1520,585,],
-                "2marvel41.png":[404,15,573,195,],
-                "2marvel5.jpg":[962,5,1605,687,],
-                "2marvel8.jpg":[959,167,1145,368,],
-                "2marvel9.jpg":[1136,41,1457,461,],
-                "5aoyun.jpg": [360, 260, 545, 518],
-                "4gaigekaifang.jpg": [603, 121, 703, 263],
-                "2kangmeiyuanchao.jpg": [247, 442, 340, 570],
-                "1kaiguodadian.jpg": [746, 264, 999, 560],
-                "3liangdanyixing.jpg": [1297, 169, 1685, 680],
-                "6yidaiyilu.jpg": [611, 162, 678, 239],  # [229, 198, 314, 294]
-                '2013.jpg': [676, 206, 748, 299],
-                '2015.jpg': [246, 215, 317, 306],
-                '2016.jpg': [633, 119, 682, 181],
-                '2017.jpg': [217, 70, 265, 122],
-                '2019.jpg': [408, 141, 473, 228]
-                }
+            "1marvel005.jpg": [646, 45, 930, 347, ],
+            "1marvel006.jpg": [511, 223, 953, 637],
+            "1marvel007.jpg": [793, 19, 1102, 415, ],
+            "1marvel008.jpg": [1176, 59, 1523, 510, ],
+            "1marvel012.jpg": [922, 14, 1243, 401, ],
+            "1marvel013.jpg": [896, 6, 1268, 410, ],
+            "1marvel018.jpg": [559, 94, 1000, 513, ],
+            "1marvel019.jpg": [558, 49, 1028, 505, ],
+            "1marvel020.jpg": [1020, 20, 1335, 420, ],
+            "1marvel022.jpg": [587, 18, 941, 453, ],
+            "1marvel023.jpg": [1028, 23, 1391, 468, ],
+            "2marvel11.jpg": [518, 1, 1180, 683, ],
+            "2marvel12.jpg": [418, 36, 813, 465, ],
+            "2marvel14.jpg": [1077, 44, 1357, 387, ],
+            "2marvel15.jpg": [1000, 10, 1675, 715, ],
+            "2marvel16.jpg": [557, 28, 959, 541, ],
+            "2marvel17.jpg": [504, 205, 740, 479, ],
+            "2marvel19.jpg": [858, 209, 1072, 523, ],
+            "2marvel2.jpg": [671, 79, 1003, 497, ],
+            "2marvel22.jpg": [578, 3, 1153, 523, ],
+            "2marvel23.jpg": [631, 61, 1095, 565, ],
+            "2marvel26.jpg": [1077, 1, 1498, 563, ],
+            "2marvel29.jpg": [1154, 59, 1328, 274, ],
+            "2marvel3.jpg": [618, 33, 970, 476, ],
+            "2marvel30.jpg": [539, 24, 907, 450, ],
+            "2marvel34.jpg": [1090, 17, 1520, 585, ],
+            "2marvel41.png": [404, 15, 573, 195, ],
+            "2marvel5.jpg": [962, 5, 1605, 687, ],
+            "2marvel8.jpg": [959, 167, 1145, 368, ],
+            "2marvel9.jpg": [1136, 41, 1457, 461, ],
+            "5aoyun.jpg": [360, 260, 545, 518],
+            "4gaigekaifang.jpg": [603, 121, 703, 263],
+            "2kangmeiyuanchao.jpg": [247, 442, 340, 570],
+            "1kaiguodadian.jpg": [746, 264, 999, 560],
+            "3liangdanyixing.jpg": [1297, 169, 1685, 680],
+            "6yidaiyilu.jpg": [611, 162, 678, 239],  # [229, 198, 314, 294]
+            '2013.jpg': [676, 206, 748, 299],
+            '2015.jpg': [246, 215, 317, 306],
+            '2016.jpg': [633, 119, 682, 181],
+            '2017.jpg': [217, 70, 265, 122],
+            '2019.jpg': [408, 141, 473, 228]
+        }
 
         self.Subtitle = {
             "marvel17.jpg": '',
@@ -165,7 +165,7 @@ class Faceswap(object):
             "marvel31.jpg": 'mid',
             "marvel34.jpg": 'mid',
             "marvel41.png": 'mid',
-            "marvel001.jpg":'mid',
+            "marvel001.jpg": 'mid',
             "marvel003.jpg": 'mid',
             "marvel004.jpg": 'mid',
             "marvel005.jpg": 'shock',
@@ -188,7 +188,7 @@ class Faceswap(object):
 
         # Points used to line up the images.
         self.ALIGN_POINTS = (self.LEFT_BROW_POINTS + self.RIGHT_EYE_POINTS + self.LEFT_EYE_POINTS +
-                                       self.RIGHT_BROW_POINTS + self.NOSE_POINTS + self.MOUTH_POINTS)
+                             self.RIGHT_BROW_POINTS + self.NOSE_POINTS + self.MOUTH_POINTS)
 
         # Points from the second image to overlay on the first. The convex hull of each
         # element will be overlaid.
@@ -204,8 +204,7 @@ class Faceswap(object):
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(PREDICTOR_PATH)
 
-
-    def get_landmarks(self,im):
+    def get_landmarks(self, im):
         rects = self.detector(im, 1)
 
         if len(rects) > 1:
@@ -215,7 +214,7 @@ class Faceswap(object):
 
         return numpy.matrix([[p.x, p.y] for p in self.predictor(im, rects[0]).parts()])
 
-    def annotate_landmarks(self,im, landmarks):
+    def annotate_landmarks(self, im, landmarks):
         im = im.copy()
         for idx, point in enumerate(landmarks):
             pos = (point[0, 0], point[0, 1])
@@ -226,17 +225,17 @@ class Faceswap(object):
             cv2.circle(im, pos, 3, color=(0, 255, 255))
         return im
 
-    def draw_convex_hull(self,im, points, color):
+    def draw_convex_hull(self, im, points, color):
         points = cv2.convexHull(points)
         cv2.fillConvexPoly(im, points, color=color)
 
-    def get_face_mask(self,im, landmarks):
+    def get_face_mask(self, im, landmarks):
         im = numpy.zeros(im.shape[:2], dtype=numpy.float64)
 
         for group in self.OVERLAY_POINTS:
             self.draw_convex_hull(im,
-                             landmarks[group],
-                             color=1)
+                                  landmarks[group],
+                                  color=1)
 
         im = numpy.array([im, im, im]).transpose((1, 2, 0))
 
@@ -245,7 +244,7 @@ class Faceswap(object):
 
         return im
 
-    def transformation_from_points(self,points1, points2):
+    def transformation_from_points(self, points1, points2):
         """
         Return an affine transformation [s * R | T] such that:
 
@@ -284,8 +283,8 @@ class Faceswap(object):
                                            c2.T - (s2 / s1) * R * c1.T)),
                              numpy.matrix([0., 0., 1.])])
 
-    def read_im_and_landmarks(self,fname):
-        im = cv2.imread(fname,cv2.IMREAD_COLOR )#
+    def read_im_and_landmarks(self, fname):
+        im = cv2.imread(fname, cv2.IMREAD_COLOR)  #
         print(numpy.shape(im))
         im = cv2.resize(im, (im.shape[1] * self.SCALE_FACTOR,
                              im.shape[0] * self.SCALE_FACTOR))
@@ -293,7 +292,7 @@ class Faceswap(object):
 
         return im, s
 
-    def warp_im(self,im, M, dshape):
+    def warp_im(self, im, M, dshape):
         output_im = numpy.zeros(dshape, dtype=im.dtype)
         cv2.warpAffine(im,
                        M[:2],
@@ -303,10 +302,10 @@ class Faceswap(object):
                        flags=cv2.WARP_INVERSE_MAP)
         return output_im
 
-    def correct_colours(self,im1, im2, landmarks1):
+    def correct_colours(self, im1, im2, landmarks1):
         blur_amount = self.COLOUR_CORRECT_BLUR_FRAC * numpy.linalg.norm(
-                                  numpy.mean(landmarks1[self.LEFT_EYE_POINTS], axis=0) -
-                                  numpy.mean(landmarks1[self.RIGHT_EYE_POINTS], axis=0))
+            numpy.mean(landmarks1[self.LEFT_EYE_POINTS], axis=0) -
+            numpy.mean(landmarks1[self.RIGHT_EYE_POINTS], axis=0))
         blur_amount = int(blur_amount)
         if blur_amount % 2 == 0:
             blur_amount += 1
@@ -317,9 +316,9 @@ class Faceswap(object):
         im2_blur += (128 * (im2_blur <= 1.0)).astype(im2_blur.dtype)
 
         return (im2.astype(numpy.float64) * im1_blur.astype(numpy.float64) /
-                                                    im2_blur.astype(numpy.float64))
+                im2_blur.astype(numpy.float64))
 
-    def swap(self,ori,path):
+    def swap(self, ori, path):
         filename1 = path
         filename2 = ori
 
@@ -331,7 +330,7 @@ class Faceswap(object):
         im2, landmarks2 = self.read_im_and_landmarks(filename2)
 
         M = self.transformation_from_points(landmarks1[self.ALIGN_POINTS],
-                                       landmarks2[self.ALIGN_POINTS])
+                                            landmarks2[self.ALIGN_POINTS])
 
         mask = self.get_face_mask(im2, landmarks2)
         warped_mask = self.warp_im(mask, M, im1.shape)
@@ -342,32 +341,32 @@ class Faceswap(object):
         warped_corrected_im2 = self.correct_colours(im1, warped_im2, landmarks1)
 
         output_im = im1 * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
-        return(output_im)
+        return (output_im)
 
     # cv2.imwrite('output.jpg', output_im)
 
-    def swap_part(self,ori,path,labels):
+    def swap_part(self, ori, path, labels):
         filename1 = path
         filename2 = ori
         # xmin=2257
         # ymin=1331
         # xmax=2532
         # ymax=1606
-        xmin,ymin,xmax,ymax = labels
+        xmin, ymin, xmax, ymax = labels
         # im1, landmarks1 = read_im_and_landmarks(filename1)
         im = cv2.imread(filename1, cv2.IMREAD_COLOR)
-        im_part = im[ymin:ymax,xmin:xmax,:]
+        im_part = im[ymin:ymax, xmin:xmax, :]
 
         print(im.shape)
         im1 = cv2.resize(im_part, (im_part.shape[1] * self.SCALE_FACTOR,
-                             im_part.shape[0] * self.SCALE_FACTOR))
+                                   im_part.shape[0] * self.SCALE_FACTOR))
         landmarks1 = self.get_landmarks(im1)
 
         # im1, landmarks1 = read_im_and_landmarks(filename1)
         im2, landmarks2 = self.read_im_and_landmarks(filename2)
 
         M = self.transformation_from_points(landmarks1[self.ALIGN_POINTS],
-                                       landmarks2[self.ALIGN_POINTS])
+                                            landmarks2[self.ALIGN_POINTS])
 
         mask = self.get_face_mask(im2, landmarks2)
         warped_mask = self.warp_im(mask, M, im1.shape)
@@ -378,11 +377,12 @@ class Faceswap(object):
         warped_corrected_im2 = self.correct_colours(im1, warped_im2, landmarks1)
 
         output_im = im1 * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
-        for i in range(ymin,ymax):
-            for j in range(xmin,xmax):
-                im[i][j] = output_im[i-ymin][j-xmin]
-        return(im)
-    def test(self,):
+        for i in range(ymin, ymax):
+            for j in range(xmin, xmax):
+                im[i][j] = output_im[i - ymin][j - xmin]
+        return (im)
+
+    def test(self, ):
         # 遍历
         rootdir = './marvel'
         ori = './41n'
@@ -415,7 +415,7 @@ class Faceswap(object):
         print('finish')
         return
 
-    def test_a_person(self,):
+    def test_a_person(self, ):
         # 遍历
         rootdir = 'C:/Users/rht/PycharmProjects/face_swap/mar'
         path_ori = 'C:/Users/rht/PycharmProjects/face_swap/41n/lgz'
@@ -438,13 +438,14 @@ class Faceswap(object):
 
                     output = self.swap(path_ori_gesture, path)
                 else:
-                    output = self.swap_part(path_ori_gesture,path,labels)
+                    output = self.swap_part(path_ori_gesture, path, labels)
                 # print(numpy.shape(output))
-                print('./result/person_result' + "/" + 'lgz'+str(i) + '.jpg has been saved')
+                print('./result/person_result' + "/" + 'lgz' + str(i) + '.jpg has been saved')
                 cv2.imwrite('./result/person_result2' + "/" + list[i], output)
         print('finish')
         return
-    def swap1(self,img,path,im2,landmarks2):
+
+    def swap1(self, img, path, im2, landmarks2):
         filename1 = path
         # filename2 = ori
 
@@ -458,7 +459,7 @@ class Faceswap(object):
         # im2, landmarks2 = self.read_im_and_landmarks(filename2)
 
         M = self.transformation_from_points(landmarks1[self.ALIGN_POINTS],
-                                       landmarks2[self.ALIGN_POINTS])
+                                            landmarks2[self.ALIGN_POINTS])
 
         mask = self.get_face_mask(im2, landmarks2)
         warped_mask = self.warp_im(mask, M, im1.shape)
@@ -469,25 +470,25 @@ class Faceswap(object):
         warped_corrected_im2 = self.correct_colours(im1, warped_im2, landmarks1)
 
         output_im = im1 * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
-        return(output_im)
+        return (output_im)
 
     # cv2.imwrite('output.jpg', output_im)
 
-    def swap_part1(self,img,path,labels,im2,landmarks2):
+    def swap_part1(self, img, path, labels, im2, landmarks2):
         filename1 = path
         # filename2 = ori
         # xmin=2257
         # ymin=1331
         # xmax=2532
         # ymax=1606
-        xmin,ymin,xmax,ymax = labels
+        xmin, ymin, xmax, ymax = labels
         # im1, landmarks1 = read_im_and_landmarks(filename1)
         im = cv2.imread(filename1, cv2.IMREAD_COLOR)
-        im_part = im[ymin:ymax,xmin:xmax,:]
+        im_part = im[ymin:ymax, xmin:xmax, :]
 
         print(im.shape)
         im1 = cv2.resize(im_part, (im_part.shape[1] * self.SCALE_FACTOR,
-                             im_part.shape[0] * self.SCALE_FACTOR))
+                                   im_part.shape[0] * self.SCALE_FACTOR))
         landmarks1 = self.get_landmarks(im1)
 
         # im1, landmarks1 = read_im_and_landmarks(filename1)
@@ -499,7 +500,7 @@ class Faceswap(object):
         # landmarks2 = self.get_landmarks(im2)
 
         M = self.transformation_from_points(landmarks1[self.ALIGN_POINTS],
-                                       landmarks2[self.ALIGN_POINTS])
+                                            landmarks2[self.ALIGN_POINTS])
 
         mask = self.get_face_mask(im2, landmarks2)
         warped_mask = self.warp_im(mask, M, im1.shape)
@@ -510,33 +511,34 @@ class Faceswap(object):
         warped_corrected_im2 = self.correct_colours(im1, warped_im2, landmarks1)
 
         output_im = im1 * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
-        for i in range(ymin,ymax):
-            for j in range(xmin,xmax):
-                im[i][j] = output_im[i-ymin][j-xmin]
-        return(im)
-    def test_online(self,img,path):
+        for i in range(ymin, ymax):
+            for j in range(xmin, xmax):
+                im[i][j] = output_im[i - ymin][j - xmin]
+        return im
+
+    def test_online(self, img, path):
         rootdir = path
         # path_ori = 'C:/Users/rht/PycharmProjects/face_swap/41n/lgz'
 
-        list = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
+        lis = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
         outputs = []
         subtitles = []
         im2 = cv2.resize(img, (img.shape[1] * self.SCALE_FACTOR,
                                img.shape[0] * self.SCALE_FACTOR))
         landmarks2 = self.get_landmarks(im2)
-        for i in range(0, len(list)):
-            print(list[i])
+        for i in range(0, len(lis)):
+            print(lis[i])
             # path = os.path.join(rootdir, list[i])
-            path = rootdir + "/" + list[i]
+            path = rootdir + "/" + lis[i]
             if os.path.isfile(path):
                 print(path)
-                labels = self.Marvel_Faces.get(list[i], 'single_face')
-                subtitle = self.Subtitle.get(list[i], '')
-                # gesture = self.Marvel_Gesture.get((list[i]), 'fail')
+                labels = self.Marvel_Faces.get(lis[i], 'single_face')
+                subtitle = self.Subtitle.get(lis[i], '')
+                # gesture = self.Marvel_Gesture.get((lis[i]), 'fail')
                 if labels == "single_face":
-                    output = self.swap1(img, path,im2,landmarks2)
+                    output = self.swap1(img, path, im2, landmarks2)
                 else:
-                    output = self.swap_part1(img, path, labels,im2,landmarks2)
+                    output = self.swap_part1(img, path, labels, im2, landmarks2)
                 # print(numpy.shape(output))
                 print('./result/person_result' + "/" + 'lgz' + str(i) + '.jpg has been saved')
 
@@ -544,18 +546,13 @@ class Faceswap(object):
                 subtitles.append(subtitle)
                 # cv2.imwrite('./result/online' + "/" + list[i], output)
         print('finish')
-        return outputs,subtitles
-if __name__ == '__main__':
-    # path_ori = './41n/lyp.jpg'
-    # path = './mar/marvel9.jpg'
-    # output = swap(path_ori, path)
-    # cv2.imshow('a',output)
-    # cv2.waitKey()
-    # # print(numpy.shape(output))
-    # path1 = './result/dee/1.jpg'
-    # cv2.imwrite(path1, output)
-    a = Faceswap()
-    path1 = './41n/lgz2.jpg'
-    path = './SpringFestival'
-    img = cv2.imread(path1, cv2.IMREAD_COLOR)
-    outputs,subtitles = a.test_online(img,path)
+        return outputs, subtitles
+
+
+# if __name__ == '__main__':
+#
+#     a = Faceswap()
+#     path1 = './41n/lgz2.jpg'
+#     path = './SpringFestival'
+#     img = cv2.imread(path1, cv2.IMREAD_COLOR)
+#     outputs, subtitles = a.test_online(img, path)
