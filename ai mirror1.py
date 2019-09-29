@@ -4,15 +4,10 @@ import numpy as np
 import cv2
 from ISR.models import RDN, RRDN
 from PIL import Image
-import matplotlib.pyplot as plt
-import data_helper as dt
 # import sql
-
-# sys.path.append("/data/code/STGAN_latest/STGAN/")
 import demo2
 from FaceDetector.FaceDetectorPro import faceDetect_server
 from change_Styclass import changestyle
-# from segmodels.parser import face_parser
 from changeClass import changeFace
 import faceswapOnline as fs
 import sys
@@ -46,22 +41,21 @@ with open('springFastival.jpg', 'rb') as f:
     springFestival = base64.b64encode(f.read()).decode()
 
 # 全局化
+# keras可能会出现的bug：在第一次predict的时候有问题，这里初始化后，选取一张图片让model执行一次predict，后面predict就不会报错了
 cgclr = changeFace()
 stgan = demo2.STGAN()
-rdn = RDN(arch_params={'C': 6, 'D': 20, 'G': 64, 'G0': 64, 'x': 2})
-
-rdn.model.load_weights(
-    'G:/Deecamp/STGAN_ZW/STGAN/ImageSuperResolution/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf')
-
-img = Image.open('G:/Deecamp/STGAN_ZW/STGAN/ImageSuperResolution/image/20121.jpg')
-lr_img = np.array(img)
-rdn.predict(lr_img)
-cgclr.getMask(lr_img, 'skin')
-# print('successful!')
-
 cgstyle = changestyle()
+rdn = RDN(arch_params={'C': 6, 'D': 20, 'G': 64, 'G0': 64, 'x': 2})
+rdn.model.load_weights(
+     'G:/Deecamp/STGAN_ZW/STGAN/ImageSuperResolution/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf')
+
+img = np.array(Image.open('G:/Deecamp/STGAN_ZW/STGAN/ImageSuperResolution/image/20121.jpg'))
+rdn.predict(img)
+cgclr.getMask(img, 'skin')
+
 im = cv2.imread("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/fj2.png")
 body = cgstyle.inference(im, 1)
+print("init successfully")
 
 
 @app.route('/Hello')
@@ -88,7 +82,6 @@ def init():
         return json.dumps(dic)
 
 
-#######xu
 @app.route('/story_init', methods=['POST', 'GET'])
 def story_init():
     # story的图片传过去
@@ -179,7 +172,6 @@ def changeColor():
         return json.dumps(dic)
 
 
-# 想看传入json的图片格式，以及传入前端后怎么如何变成图片
 @app.route("/changeStyle", methods=['POST', 'GET'])
 def changeStyle():
     if request.method == 'POST':
@@ -281,8 +273,7 @@ if __name__ == '__main__':
     # changePart = 'mouth'
     # mix = 0.6
     # res, mask = cgclr.change2(lr_img, changePart, tgtRGB, mix)
-    # #res,mask = cgclr.Change(lr_img,changePart,tgtRGB,mix)
-    # # # print(res.shape)
+    #  print(res.shape)
     # # print("lr_img", lr_img.shape, lr_img.dtype)
     # mask = cgclr.getMask(lr_img, 'skin')
     # mask = mask / 255

@@ -62,7 +62,7 @@ def maxpool(x, k=3, s=2, pad=1):
     x = MaxPooling2D((k,k), strides=s)(x)
     return x
     
-def BiSeNet_keras(input_resolution=1024): # 512
+def BiSeNet_keras(input_resolution = 1024): # 512
     inp = Input((input_resolution, input_resolution, 3))
     x = ZeroPadding2D(3)(inp)
     x = Conv2D(64, 7, strides=2, use_bias=False, name="cp.resnet.conv1")(x)

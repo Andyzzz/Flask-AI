@@ -1,19 +1,21 @@
 import numpy as np
 import cv2
 from pathlib import Path
-
+from imageio import imsave
 from .BiSeNet.bisenet import BiSeNet_keras
 
 FILE_PATH = str(Path(__file__).parent.resolve())
 
+
 class FaceParser():
-    def __init__(self, path_bisenet_weights=FILE_PATH+"/BiSeNet/BiSeNet_keras.h5", detector=None):
+    def __init__(self, path_bisenet_weights=FILE_PATH+"\\BiSeNet\\BiSeNet_keras.h5", detector=None):
         self.parser_net = None
         self.detector = detector
     
         self.build_parser_net(path_bisenet_weights)
         
     def build_parser_net(self, path):
+        # print('path ', path)
         parser_net = BiSeNet_keras()
         parser_net.load_weights(path)
         self.parser_net = parser_net
@@ -56,14 +58,16 @@ class FaceParser():
         for face in faces:
             # Preprocess input face for parser networks
             orig_h, orig_w = face.shape[:2]
-            inp = cv2.resize(face, (1024,1024),interpolation=cv2.INTER_LINEAR)
+            inp = cv2.resize(face, (1024, 1024), interpolation=cv2.INTER_LINEAR)
             #inp = cv2.resize(face, (512,512))
             inp = self.normalize_input(inp)
+            # imsave('G:/Deecamp/inp.png', inp)
             inp = inp[None, ...]
-            print(">>>>>>>DEBUG: ", inp.shape)
+            print(">>>>>>>face parser input image shape: ", inp.shape)
 
             # Parser networks forward pass
             # Do NOT use bilinear interp. which adds artifacts to the parsing map
+
             out = self.parser_net.predict([inp])[0]
             parsing_map = out.argmax(axis=-1)
             parsing_map = cv2.resize(

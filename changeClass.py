@@ -5,12 +5,11 @@ import warnings
 warnings.filterwarnings("ignore")
 import cv2
 import numpy as np
-#from matplotlib import pyplot as plt
 # import sys
 # sys.path.append('./face_toolbox_keras/')
 from segmodels.parser import face_parser
 from PIL import Image
-
+from imageio import imread, imsave
 
 
 class changeFace():
@@ -25,9 +24,10 @@ class changeFace():
         # prs = face_parser.FaceParser()
         out = self.prs.parse_face(im)
         seg = out[0]
+        # cv2.imwrite('G:/Deecamp/segment.png', seg)
         return seg
 
-    def resize_image(self,im, max_size=768):
+    def resize_image(self, im, max_size=768):
         if np.max(im.shape) > max_size:
             ratio = max_size / np.max(im.shape)
             # print(f"Resize image to ({str(int(im.shape[1] * ratio))}, {str(int(im.shape[0] * ratio))}).")
@@ -103,54 +103,57 @@ class changeFace():
     def getMask(self, im, changePart):
         seg = self.segmentation(im)
         # segDict =  {'background':[0], 'skin':[1], 'left eyebrow':[2], 'right eyebrow':[3], 'left eye':[4], 'right eye':[5], 'glasses':[6],
-                    # 'left ear':[7],'right ear':[8], 'earings':[9], 'nose':[10], 'mouth':[12,13], 'upper lip':[12], 'lower lip':[13], 'neck':[14],
-                    # 'neck_l':[15],'cloth':[16], 'hair':[17], 'hat':[18], 'eyes':[4,5],'ears':[7,8],'eyebrows':[2,3]
+        # 'left ear':[7],'right ear':[8], 'earings':[9], 'nose':[10], 'mouth':[12,13], 'upper lip':[12], 'lower lip':[13], 'neck':[14],
+        # 'neck_l':[15],'cloth':[16], 'hair':[17], 'hat':[18], 'eyes':[4,5],'ears':[7,8],'eyebrows':[2,3]
         # }
-        segDict =  {'background':[0], 'skin':[1,7,8,9,10,14,15,], 'ears':[7,8,9],'eyebrows':[2,3],
-        'glasses':[6], 'nose':[10], 'mouth':[12,13], 'neck':[14], 'hair':[17], 'hat':[18], 'eyes':[4,5],
-        }
-        h,w,c = im.shape
+        segDict = {'background': [0], 'skin': [1, 7, 8, 9, 10, 14, 15, ], 'ears': [7, 8, 9], 'eyebrows': [2, 3],
+                   'glasses': [6], 'nose': [10], 'mouth': [12, 13], 'neck': [14], 'hair': [17], 'hat': [18],
+                   'eyes': [4, 5],
+                   }
+        h, w, c = im.shape
 
-        mask = np.zeros((h,w))
+        mask = np.zeros((h, w))
         for i in segDict[changePart]:
-            mask[seg==i]=255
+            mask[seg == i] = 255
         print(mask.shape)
         return mask
 
-    def change2(self,im,changePart,tgtRGB,mix=0.6):
+    def change2(self, im, changePart, tgtRGB, mix=0.6):
         seg = self.segmentation(im)
         # segDict =  {'background':[0], 'skin':[1], 'left eyebrow':[2], 'right eyebrow':[3], 'left eye':[4], 'right eye':[5], 'glasses':[6],
-                    # 'left ear':[7],'right ear':[8], 'earings':[9], 'nose':[10], 'mouth':[12,13], 'upper lip':[12], 'lower lip':[13], 'neck':[14],
-                    # 'neck_l':[15],'cloth':[16], 'hair':[17], 'hat':[18], 'eyes':[4,5],'ears':[7,8],'eyebrows':[2,3]
+        # 'left ear':[7],'right ear':[8], 'earings':[9], 'nose':[10], 'mouth':[12,13], 'upper lip':[12], 'lower lip':[13], 'neck':[14],
+        # 'neck_l':[15],'cloth':[16], 'hair':[17], 'hat':[18], 'eyes':[4,5],'ears':[7,8],'eyebrows':[2,3]
         # }
-        segDict =  {'background':[0], 'skin':[1,7,8,9,10,14,15,], 'ears':[7,8,9],'eyebrows':[2,3],
-        'glasses':[6], 'nose':[10], 'mouth':[12,13], 'neck':[14], 'hair':[17], 'hat':[18], 'eyes':[4,5],
-        }
-        h,w,c = im.shape
+        segDict = {'background': [0], 'skin': [1, 7, 8, 9, 10, 14, 15, ], 'ears': [7, 8, 9], 'eyebrows': [2, 3],
+                   'glasses': [6], 'nose': [10], 'mouth': [12, 13], 'neck': [14], 'hair': [17], 'hat': [18],
+                   'eyes': [4, 5],
+                   }
+        h, w, c = im.shape
         res = im.copy()
-        mask = np.zeros((h,w))
+        mask = np.zeros((h, w))
         for i in segDict[changePart]:
-            mask[seg==i]=255
+            mask[seg == i] = 255
         mask2 = mask.copy()
-        mask = cv2.blur(mask,(5,5))
+        mask = cv2.blur(mask, (5, 5))
 
-        h_,s_,v_ = self.getAve(mask,im)
-        for row in range(0,h):
-            for col in range(0,w):
-                if mask[row,col]>0 and seg[row,col] in segDict[changePart]:
-                    newmix = mix*mask[row,col]/255.0
-                    srcRGB = [res[row,col,0],res[row,col,1],res[row,col,2]]
-                    srcHSV = self.rgb2hsv(srcRGB[0],srcRGB[1],srcRGB[2])
-                    tgtHSV = self.rgb2hsv(tgtRGB[0],tgtRGB[1],tgtRGB[2])
-                    if v_<0.1:
-                      srcHSV[2] += 0.3
-                      if srcHSV[2]>1.0:
-                          srcHSV[2]=0.99
-                    srcHSVnew = [tgtHSV[0],tgtHSV[1],srcHSV[2]]  # Ö»Ìæ»»h,sµœÄ¿±êÑÕÉ«
-                    srcRGBnew = self.hsv2rgb(srcHSVnew[0],srcHSVnew[1],srcHSVnew[2])
-                    resRGB = (1-newmix)*np.array(srcRGB) + newmix*np.array(srcRGBnew)
-                    res[row,col,0],res[row,col,1],res[row,col,2] = int(resRGB[0]),int(resRGB[1]),int(resRGB[2])
-        return res,mask2
+        h_, s_, v_ = self.getAve(mask, im)
+        for row in range(0, h):
+            for col in range(0, w):
+                if mask[row, col] > 0 and seg[row, col] in segDict[changePart]:
+                    newmix = mix * mask[row, col] / 255.0
+                    srcRGB = [res[row, col, 0], res[row, col, 1], res[row, col, 2]]
+                    srcHSV = self.rgb2hsv(srcRGB[0], srcRGB[1], srcRGB[2])
+                    tgtHSV = self.rgb2hsv(tgtRGB[0], tgtRGB[1], tgtRGB[2])
+                    if v_ < 0.1:
+                        srcHSV[2] += 0.3
+                        if srcHSV[2] > 1.0:
+                            srcHSV[2] = 0.99
+                    srcHSVnew = [tgtHSV[0], tgtHSV[1], srcHSV[2]]
+                    srcRGBnew = self.hsv2rgb(srcHSVnew[0], srcHSVnew[1], srcHSVnew[2])
+                    resRGB = (1 - newmix) * np.array(srcRGB) + newmix * np.array(srcRGBnew)
+                    res[row, col, 0], res[row, col, 1], res[row, col, 2] = int(resRGB[0]), int(resRGB[1]), int(
+                        resRGB[2])
+        return res, mask2
 
     def change_hair(self, im, seg, tgtRGB, mix=0.6):
         h, w, c = im.shape
@@ -259,22 +262,23 @@ class changeFace():
             res, mask = self.change_mouth(im, seg, tgtRGB, mix)
         if name == 'eyebrow':
             res, mask = self.change_eyebrow(im, seg, tgtRGB, mix)
-        return res,mask
+        return res, mask
 
     def saveImg(self, name, res):
-        #plt.imsave(name, res)
+        # plt.imsave(name, res)
         return
+
 
 if __name__ == "__main__":
     cgclr = changeFace()
-    img = Image.open('../ImageSuperResolution/image/20121.jpg')
-    lr_img = np.array(img)
-    cgclr.getMask(lr_img,'skin')
+    # img = Image.open('G:/Deecamp/pic2.png')
+    # lr_img = np.array(img)
+    # img = cv2.imread('G:/Deecamp/pic2.png')[:, :, ::-1]
+    img = np.array(Image.open('G:/Deecamp/pic2.png'))
+    # cv2.imwrite('G:/Deecamp/rgb.png', img)
+    imsave('G:/Deecamp/rgb.png', img)
+    res, mask = cgclr.change2(img, 'mouth', [100, 0, 0])
+    # cgclr.getMask(img, 'skin')
+    # cv2.imwrite('G:/Deecamp/changeMouth.png', res)
+    imsave('G:/Deecamp/changeMouth.png', res)
     print('successful')
-
-
-
-
-
-
-

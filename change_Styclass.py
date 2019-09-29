@@ -6,7 +6,6 @@ import tensorflow as tf
 import os
 import glob
 from segmodels.parser import face_parser
-from PIL import Image
 import cv2
 warnings.filterwarnings("ignore")
 
