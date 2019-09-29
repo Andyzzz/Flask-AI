@@ -7,7 +7,6 @@
 '''
 
 import cv2
-import numpy as np
 
 
 def faceDetect(imgPath, savePath, imgSize=(256, 256)):
@@ -28,8 +27,6 @@ def faceDetect(imgPath, savePath, imgSize=(256, 256)):
     # face = face_cascade.detectMultiScale(img, 1.1, 10)scaleFactor=None, minNeighbors=None,
     face = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=10)
 
-    # set return path
-    # savePath = "save/"
     if len(face):
         for (x, y, w, h) in face:
             # find the center of the face
@@ -54,8 +51,8 @@ def faceDetect(imgPath, savePath, imgSize=(256, 256)):
                 y_min = img.shape[0] - 2 * face_height
 
             f = cv2.resize(img[y_min:y_max, x_min:x_max], imgSize)
-            print(np.shape(f))
-            print(savePath)
+            # print(np.shape(f))
+            # print(savePath)
             cv2.imwrite(savePath, f)
     else:
         print("No face is detected!")
@@ -74,12 +71,14 @@ def faceDetect_server(img, imgSize):
         img = cv2.resize(img, (int(img.shape[1] / p), int(img.shape[0] / p)))
     # set face detector
 
+    # face_cascade = cv2.CascadeClassifier(
+    #     'G:/Deecamp/STGAN_ZW/STGAN/FaceDetector/opencv_classifier_files/haarcascade_frontalface_alt2.xml')
     face_cascade = cv2.CascadeClassifier(
-        'G:/Deecamp/STGAN_ZW/STGAN/FaceDetector/opencv_classifier_files/haarcascade_frontalface_alt2.xml')
+        'G:/PythonProjects/LearnSamples/Flask-AI/FaceDetector/opencv_classifier_files/haarcascade_frontalface_alt2.xml')
+    # 这里要用绝对路径，否则会找不到文件
     # face = face_cascade.detectMultiScale(img, 1.1, 10)
     face = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=10)
-    # set return path
-    # savePath = "save/"
+    print(len(face))
     if len(face):
         for (x, y, w, h) in face:
             # find the center of the face
@@ -103,23 +102,17 @@ def faceDetect_server(img, imgSize):
             if y_max == img.shape[0]:
                 y_min = img.shape[0] - 2 * face_height
 
-            f = cv2.resize(img[y_min:y_max, x_min:x_max], imgSize)
-            print('resized shape: ', f.shape)
-            return f
+            finalImg = cv2.resize(img[y_min:y_max, x_min:x_max], imgSize)
+            # print('resized shape: ', f.shape)
+            return finalImg
     else:
         return None
 
 
 if __name__ == '__main__':
-    # for i in range(1, 16):
-    #     faceDetect("image\\{0}.jpg".format(i), "face"+str(i), imgSize=(178, 218))
-    # print("Over!")
-    #     im = cv2.imread("hq.jpg")
-    #     print('ok')
-    #     pic = faceDetect_server(im, imgSize=(128, 128))
-    #     cv2.imshow('1',pic)
-    #     cv2.waitKey()
+    img = cv2.imread('G:\\Deecamp\\cxk.png')
+    # img = cv2.imread('G:\\Deecamp\\STGAN_ZW\\STGAN\\transform_folder\\cxk.png')
+    result = faceDetect_server(img, (128, 128))
+    cv2.imwrite('G:/Deecamp/test0_face_detect.png', result)
 
-    faceDetect("hq.jpg", "hq2.jpg", imgSize=(178, 218))
-    # cv2.imwrite()
-    print('>>>>>>faceDetect finish')
+

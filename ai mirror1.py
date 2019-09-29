@@ -20,7 +20,7 @@ import sys
 sys.path.append("G:/Deecamp/STGAN_ZW/STGAN/")
 app = Flask(__name__)
 
-## 小程序里所有的妆容变换的示例图标
+# 小程序里所有的妆容变换的示例图标
 with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/0.png', 'rb') as f:
     a1 = base64.b64encode(f.read()).decode()
 with open('G:/Deecamp/STGAN_ZW/STGAN/makeup/1.png', 'rb') as f:
@@ -57,7 +57,7 @@ img = Image.open('G:/Deecamp/STGAN_ZW/STGAN/ImageSuperResolution/image/20121.jpg
 lr_img = np.array(img)
 rdn.predict(lr_img)
 cgclr.getMask(lr_img, 'skin')
-print('successful!')
+# print('successful!')
 
 cgstyle = changestyle()
 im = cv2.imread("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/fj2.png")
@@ -109,7 +109,7 @@ def story_init_1():
         pic = dic['file']
         story = dic['type']
 
-        # print(pic)
+        # # print(pic)
         # sql存储照片
         # sql.store(pic)
 
@@ -128,7 +128,7 @@ def story_init_1():
             path = "G:/Deecamp/STGAN_ZW/STGAN/face_swap/SpringFestival"
         else:
             path = None
-            print("error in ai mirror path")
+            # print("error in ai mirror path")
         # path = 'C:/Users/rht/PycharmProjects/face_swap/mar'
         outputs, subtitles = a.test_online(pic, path)
         dic = {}
@@ -186,7 +186,7 @@ def changeStyle():
         dic = request.get_json()
         pic = dic['file']
         type = int(dic['type'])
-        # print(pic)
+        # # print(pic)
         # sql存储照片
         # sql.store(pic)
 
@@ -194,12 +194,12 @@ def changeStyle():
         pic = base64.b64decode(pic)
         pic = np.frombuffer(pic, np.uint8)
         pic = cv2.imdecode(pic, cv2.IMREAD_COLOR)
-        print("sss")
+        # print("sss")
         # pic现在是numpy array，调用接口进行处理
 
-        pic = cgstyle.inference(pic, type)  ############################
+        pic = cgstyle.inference(pic, type)
 
-        print("ccc")
+        # print("ccc")
         # pic转base64编码
         retval, buffer = cv2.imencode('.jpg', pic)
         pic = base64.b64encode(buffer)
@@ -220,8 +220,6 @@ def changeAttr():
         pic = np.frombuffer(pic, np.uint8)
         pic = cv2.imdecode(pic, cv2.IMREAD_COLOR)[..., ::-1]
 
-        #         pic = cv2.resize(pic, (128, 128))
-        # print("PIC", pic.shape, type(pic), type(pic[0][0][0]))
 
         # mask = cgclr.getMask(lr_img,'skin')
         # mask = mask/255
@@ -233,7 +231,7 @@ def changeAttr():
         labels = stgan.classifier(pic_1)
         # stgan.verification(path_list, labels, name_list)
         pic_GEN = stgan.inference(pic_1, labels, attr)[0][..., ::-1]
-        # print(pic.shape, type(pic[0][0][0]))
+        # # print(pic.shape, type(pic[0][0][0]))
         #         pic_GEN = cv2.resize(pic_GEN, (256, 256))
         #         pic_1 = rdn.predict(pic_GEN)
         # rdn.predict(pic_GEN)需要传入的是BGR？
@@ -258,18 +256,19 @@ def changeSize():
         pic = base64.b64decode(pic)
         pic = np.frombuffer(pic, np.uint8)
         pic = cv2.imdecode(pic, cv2.IMREAD_COLOR)
-        print('shape before changeSize: ', pic.shape)
+        # print('shape before changeSize: ', pic.shape)
         # pic现在是numpy array，调用接口进行处理
-
+        cv2.imwrite('G:/Deecamp/pic.png', pic)
         pic = faceDetect_server(pic, imgSize=(128, 128))  # 128， 128
-        print('shape after changeSize: ', pic.shape)
+        cv2.imwrite('G:/Deecamp/pic2.png', pic)
+        # print('shape after changeSize: ', pic.shape)
         # pic = rdn.predict(pic)  # 超分为256*256
 
         # pic转base64编码
         retval, buffer = cv2.imencode('.jpg', pic)
         pic = base64.b64encode(buffer)
         pic = pic.decode()
-        print('type pic ', type(pic))
+        # print('type pic ', type(pic))
         dic = {'res_data': pic}
         return json.dumps(dic)
 
@@ -283,8 +282,8 @@ if __name__ == '__main__':
     # mix = 0.6
     # res, mask = cgclr.change2(lr_img, changePart, tgtRGB, mix)
     # #res,mask = cgclr.Change(lr_img,changePart,tgtRGB,mix)
-    # # print(res.shape)
-    # print("lr_img", lr_img.shape, lr_img.dtype)
+    # # # print(res.shape)
+    # # print("lr_img", lr_img.shape, lr_img.dtype)
     # mask = cgclr.getMask(lr_img, 'skin')
     # mask = mask / 255
     # mask = np.reshape(mask,(128, 128, 1))
@@ -294,7 +293,7 @@ if __name__ == '__main__':
     # labels = stgan.classifier(pic_1)
     # # stgan.verification(path_list, labels, name_list)
     # pic_GEN = stgan.inference(pic_1, labels, ['Pale_Skin'])[0][..., ::-1]
-    # # print(pic.shape, type(pic[0][0][0]))
+    # # # print(pic.shape, type(pic[0][0][0]))
     # # pic_1 = rdn.predict(pic_GEN)
     # mask_ori = (mask + 1) % 2
     # pic = lr_img * mask_ori + pic_GEN * mask
@@ -302,7 +301,7 @@ if __name__ == '__main__':
     # cv2.imshow('img',pic)
     # cv2.waitKey()
     # pic = lr_img
-    # print('下面出现错误')
+    # # print('下面出现错误')
     # pic = faceDetect_server(pic, imgSize=(128, 128))
     # pic = rdn.predict(pic)
-    # print('DEBUG>>>>> \n faceDetect_server is ok \n rdn is ok')
+    # # print('DEBUG>>>>> \n faceDetect_server is ok \n rdn is ok')

@@ -1,37 +1,34 @@
-from flask import Flask,request
+from flask import Flask, request
 import warnings
-warnings.filterwarnings("ignore")
 import numpy as np
-from matplotlib import pyplot as plt
 from imageio import imread, imsave
 import tensorflow as tf
 import os
 import glob
-import argparse
 from segmodels.parser import face_parser
-#import face_recognition   ###########################
 from PIL import Image
-import cv2 as cv
-import argparse
+import cv2
+warnings.filterwarnings("ignore")
 
 class changestyle(object):
     def __init__(self):
-        self.g_x=tf.Graph()
-        self.sess_b=tf.Session(graph=self.g_x)
-        
+        self.g_x = tf.Graph()
+        self.sess_b = tf.Session(graph=self.g_x)
+
         self.batch_size = 1
         self.img_size = 256
-        x,y,xs=self.init_models()
-        self.X=x
-        self.Y=y
-        self.Xs=xs
-        self.prs=face_parser.FaceParser()
+        x, y, xs = self.init_models()
+        self.X = x
+        self.Y = y
+        self.Xs = xs
+        self.prs = face_parser.FaceParser()
 
     def init_models(self):
         with self.sess_b.as_default():
             with self.sess_b.graph.as_default():
-#                 saver = tf.train.import_meta_graph(os.path.join('./model', 'model.meta'))
-                saver = tf.train.import_meta_graph(os.path.join('G:/Deecamp/STGAN_ZW/STGAN/transform_folder/model', 'model.meta'))
+                #                 saver = tf.train.import_meta_graph(os.path.join('./model', 'model.meta'))
+                saver = tf.train.import_meta_graph(
+                    os.path.join('G:/Deecamp/STGAN_ZW/STGAN/transform_folder/model', 'model.meta'))
                 saver.restore(self.sess_b,
                               tf.train.latest_checkpoint('G:/Deecamp/STGAN_ZW/STGAN/transform_folder/model'))
                 X = self.sess_b.graph.get_tensor_by_name('X:0')
@@ -43,17 +40,14 @@ class changestyle(object):
                 # saver.restore(self.sess_b, '/home/zou/deeplearning/GAN/STGAN/att_classification/checkpoints/128.ckpt')
         return X, Y, Xs
 
-    def preprocess(self,img):
+    def preprocess(self, img):
         return (img / 255. - 0.5) * 2
 
-    def deprocess(self,img):
+    def deprocess(self, img):
         return (img + 1) / 2
 
-    def inference(self,im,type):
-        # # # 定义你的带转换图像地址
-        # im_url = request.args.get("url")
-        # 定义你的目标风格图像地址
-
+    def inference(self, im, type):
+        # 定义你的目标风格图像
         if type == 0:
             makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/gete.png"
         elif type == 1:
@@ -72,50 +66,37 @@ class changestyle(object):
             makeup_photo = "G:/Deecamp/STGAN_ZW/STGAN/transform_folder/imgs/makeup/XMY-136.png"
 
         """人脸截取"""
-        # 此处将输入的图片通过face_recognition
-        # image = face_recognition.load_image_file("D:\\daima\\gan\\BeautyGAN-master\\transform\\imgs\\no_makeup\\fj2.png")
-        #
-        # face_locations = face_recognition.face_locations(image)
-
-        # image = cv.imread(im_url)
-        # image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-
-        # image = Image.fromarray(im)
+        # 此处将输入的图片通过人脸检测
+        # 先把im从RGB转换为BGR，image是待转换图像
         image = im[:, :, ::-1]
-        detector = cv.CascadeClassifier("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/haarcascade_frontalface_alt.xml")
-        rects = detector.detectMultiScale(image, scaleFactor=1.1, minNeighbors=2, minSize=(10, 10),
-                                          flags=cv.CASCADE_SCALE_IMAGE)  # (x,y,w,h)
+        imsave('G:/Deecamp/image.png', image)
+        # 检测人脸范围
+        detector = cv2.CascadeClassifier("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/haarcascade_frontalface_alt.xml")
+        rects = detector.detectMultiScale(image, scaleFactor=1.1, minNeighbors=10)  # (x,y,w,h)  , minSize=(10, 10),flags=cv2.CASCADE_SCALE_IMAGE
         x, y, w, h = rects[0]
         y = y - 30
         h = h + 60
-        # print(rects )
-        # roiImg = image[y:(y+h),x:(x+w)]
-        roiImg = image[y:(y + h), x:(x + w)]
-        # imsave('result_face.jpg', roiImg)
+        roiImg = image[y:(y + h), x:(x + w)]  # 注意，这里有可能image本身的大小小于y+h和x+w，所以最终尺寸不一定是(w,h)，所以后面要重新记录一下(w,h)
+        h, w, _ = roiImg.shape   # 更新h,w的值
+        # imsave('G:/Deecamp/result_face.jpg', roiImg)
 
-        """风格迁移"""
-        no_makeup = cv.resize(roiImg, (self.img_size, self.img_size))
+        # 风格迁移
+        no_makeup = cv2.resize(roiImg, (self.img_size, self.img_size))  # 把roiImg转换成256x256尺寸，模型只接收256x256尺寸的输入
+        # imsave('G:/Deecamp/no_makeup.jpg', no_makeup)
         X_img = np.expand_dims(self.preprocess(no_makeup), 0)
         makeups = glob.glob(os.path.join('imgs', 'makeup', '*.*'))
         result = np.ones((2 * self.img_size, (len(makeups) + 1) * self.img_size, 3))
-        result[self.img_size: 2 * self.img_size, :self.img_size] = no_makeup / 255.
+        result[self.img_size: 2 * self.img_size, :self.img_size] = no_makeup / 255.0
 
-        makeup = cv.resize(imread(makeup_photo), (self.img_size, self.img_size))
+        makeup = cv2.resize(imread(makeup_photo), (self.img_size, self.img_size))
         Y_img = np.expand_dims(self.preprocess(makeup), 0)
         Xs_ = self.sess_b.run(self.Xs, feed_dict={self.X: X_img, self.Y: Y_img})
-        result = cv.resize(Xs_[0], (w, h))
+        result = cv2.resize(Xs_[0], (w, h))  # 将256x256尺寸再resize回roiImg的尺寸
         result = (result * 0.5 + 0.5) * 255
-        im = result
 
-
-        # im = resize_image(im) # Resize image to prevent GPU OOM.
-        im = cv.resize(im, (w, h))
-        h, w, _ = im.shape
-        #out = self.prs.parse_face(im)
+        im = cv2.resize(result, (w, h))
+        # h, w, _ = im.shape
         out = self.prs.parse_face(im)
-        # print(type(out[0]))
-        # imsave('result1.jpg', out[0])
-        # print(out[0].shape)
         # mask = (out[0] == 1 or out[0] == 10 or out[0] == 12 or out[0] == 13 or out[0] == 5 or out[0] == 4)
         mask = out[0] == 1
         mask_nose = out[0] == 10
@@ -131,51 +112,32 @@ class changestyle(object):
         # print(mask.shape)
         mask = np.expand_dims(mask_face, -1)
         mask = np.concatenate([mask, mask, mask], 2)
-        print("mask_shape", mask.shape)
+        # print("mask_shape", mask.shape)
 
-        # # print(out[0][150,150])
         face = im * mask
-        # imsave('./resultseg.jpg', face[:, :, ::-1])
-        # print(face.shape)
         face = face[:, :, ::-1]
         body = image[:, :, ::-1]
-        body[y:(y + h), x:(x + w)][mask] = face[mask]
-        body = np.uint8(body)
-#         imsave('./transformfj.png', body)
+
+        # print('body shape ', body.shape)
+        # print('mask shape ', mask.shape)
+        # print('face shape ', face.shape)
+
+        body[y:(y + h), x:(x + w)][mask] = face[mask]  # 将妆容变换后的区域（鼻子、嘴唇、眼睛、眉毛）的值赋值回原来的人脸图像
+        body = np.uint8(body)  # 返回bgr格式的，后面调用会再转回rgb
+        # body = body[:, :, ::-1]
+        # imsave('G:/Deecamp/transform.png', body)
         return body
+
 
 if __name__ == '__main__':
     cgstyle = changestyle()
-    im=cv.imread("./fj2.png")
-    #im = im[:,:,::-1]
-    body=cgstyle.inference(im,type = 0)
-    
-    
+    im = cv2.imread("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/test0.jpg") # BGR格式
+    body = cgstyle.inference(im, type=0)
 
-
-
-
-
-
+    # image = im[:, :, ::-1]  # 从BGR转成了RGB
     #
-    # stgan = STGAN()
-    # # path_list, name_list = stgan.crop(img_size=256)
-    # img = cv2.imread('/home/zou/deeplearning/GAN/STGAN/test/crop/0.jpg')
-    # labels = stgan.classifier(img)
-    # # stgan.verification(path_list, labels, name_list)
-    # result = stgan.inference(img, labels, ["Blond_Hair", "Goatee"])
-    # print(result)
-    # cv2.imwrite('./test/result/0.jpg', result[0])
-    # # plt.show()
-    # # cv2.waitKey()
-
-
-
-
-# class changeFace():
-#     def __init__(self):
-#         # self.im = im
-#         # self.change_name = change_name
-#         # self.tgtRGB = tgtRGB
-#         # self.mix = mix
-#         self.prs = face_parser.FaceParser()
+    # imsave('G:/Deecamp/image.png', image)
+    # # 检测人脸范围
+    # detector = cv2.CascadeClassifier("G:/Deecamp/STGAN_ZW/STGAN/transform_folder/haarcascade_frontalface_alt.xml")
+    # rects = detector.detectMultiScale(image, scaleFactor=1.1, minNeighbors=10)
+    # print('main rects: ', len(rects))
